@@ -1,0 +1,166 @@
+<html>
+
+<head>
+    <script>
+        var xhttp = new XMLHttpRequest();
+        var countriesArr_G = null;
+        var zipPossibilities_G;
+        var zipOptionArr_G = ["zipOption1", "zipOption2", "zipOption3", "zipOption4", "zipOption5"];
+        var clicksNum_G = 0;
+
+        function afterLoad() {
+            getArrays();
+        }
+
+        function getArrays() {
+            var url = "http://127.0.0.1:8095/?need=countries";
+            xhttp.open("GET", url, true);
+
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    if (this.status == 200) {
+                        countriesArr_G = JSON.parse(this.responseText);
+                        fillCountries();
+                    } else { }
+                }
+            };
+            xhttp.send();
+        }
+
+        function fillCountries() {
+            var theCode = "";
+
+            for (var i = 0; i < countriesArr_G.length; i++) {
+                var optionCode = "<option value=\"" + countriesArr_G[i] + "\" id=\"" + i + "\">" + countriesArr_G[i] + "</option>";
+                theCode = theCode + optionCode;
+            }
+            document.getElementById('countriesList').innerHTML = theCode;
+        }
+
+        function afterChoose(chosenOption) {
+            if (chosenOption == "") {
+                document.getElementById("restOfForm").style.display = "none";
+            } else {
+                document.getElementById("restOfForm").style.display = "block";
+            }
+        }
+
+        function zipChanged() {
+            var currentSearch = document.getElementById("zipCode").value;
+            var url = "http://127.0.0.1:8096/?need=" + currentSearch;
+            xhttp.open("GET", url, true);
+
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    if (this.status == 200) {
+                        zipPossibilities_G = JSON.parse(this.responseText);
+                        fillZipPossibilities();
+                    } else { }
+                }
+            };
+            xhttp.send();
+        }
+
+        function fillZipPossibilities() {
+            for (var i = 0; i < 5; i++) {
+                document.getElementById(zipOptionArr_G[i]).value = zipPossibilities_G[i];
+            }
+        }
+    </script>
+
+    <style>
+        #restOfForm {
+            display: none;
+        }
+    </style>
+</head>
+
+<body onload="afterLoad()">
+    <select id="countriesList" onchange="afterChoose(this)"> </select>
+
+    <br><br>
+
+    <div id="restOfForm">
+        <input list="zips" name="zips" id="zipCode" oninput="zipChanged()" placeholder="ZIP code">
+        <datalist id="zips">
+            <option id="zipOption1">
+            <option id="zipOption2">
+            <option id="zipOption3">
+            <option id="zipOption4">
+            <option id="zipOption5">
+        </datalist>
+        <!--
+            <input type="text" id="stateName" placeholder="State, province or other kind of an administrative region">
+            <input type="text" id="cityName" placeholder="City, village or settlement">
+            <input type="text" id="strtAddr" placeholder="Street address">
+            <input type="text" id="roomCode" placeholder="Apt, suite, unit, building, floor, etc.">
+        -->
+    </div>
+</body>
+
+</html>
+
+
+<!--
+<!DOCTYPE html>
+<html>
+<head>
+    <script>
+        var xhttp = new XMLHttpRequest();
+        var countriesArr_G = null;
+
+        function afterLoad() {
+            getArrays();
+        }
+
+        function getArrays() {
+            var url = "http://127.0.0.1:8095/?need=countries";
+            xhttp.open("GET", url, true);
+
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    if (this.status == 200) {
+                        countriesArr_G = JSON.parse(this.responseText);
+
+                        fillCountries();
+                    } else { }
+                }
+            };
+            xhttp.send();
+        }
+
+        function fillCountries() {
+            var countriesList_OBJ = document.getElementById('countriesList');
+            countriesList_OBJ.innerHTML = "";
+
+            for (var i = 0; i < countriesArr_G.length; i++) {
+                var optionCode = "<option value=\"" + countriesArr_G[i] + "\" id=\"" + countriesArr_G[i] + "\">"
+                countriesList_OBJ.innerHTML = countriesList_OBJ.innerHTML + optionCode;
+            }
+        }
+    </script>
+</head>
+<body onload="afterLoad()">
+
+<h2>The datalist Element</h2>
+
+<p>The datalist element specifies a list of pre-defined options for an input element.</p>
+
+<form action="/action_page.php">
+  <input list="browsers" name="browser">
+  <datalist id="countriesList">
+    <option value="Internet Explorer">
+    <option value="Firefox">
+    <option value="Chrome">
+    <option value="Opera">
+    <option value="Safari">
+  </datalist>
+  <input type="submit">
+</form>
+
+<p><b>Note:</b> The datalist tag is not supported in Safari prior version 12.1.</p>
+
+</body>
+</html>
+
+-->
